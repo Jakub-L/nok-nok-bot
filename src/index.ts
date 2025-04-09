@@ -1,10 +1,13 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js';
+import type { TextChannel } from 'discord.js';
 import 'dotenv/config';
+
+const { DISCORD_TOKEN = '', TARGET_CHANNEL_ID = '' } = process.env;
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.once(Events.ClientReady, (readyClient) => {
-	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+	(client.channels.cache.get(TARGET_CHANNEL_ID) as TextChannel).send(Date.now().toLocaleString());
 });
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(DISCORD_TOKEN);
