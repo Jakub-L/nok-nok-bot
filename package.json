@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "build": "tsup src/index.ts --minify"
+    "build": "tsup src/index.ts --minify",
+    "deploy-commands": "tsx scripts/deploy-commands.ts"
   },
   "keywords": [
     "RPG",
@@ -22,7 +23,6 @@
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.6",
     "prettier": "3.5.3",
-    "ts-node": "^10.9.2",
     "tsup": "^8.4.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3",
