@@ -7,7 +7,7 @@
   "scripts": {
     "build": "rm -rf dist && tsc",
     "dev": "npm run build && wrangler dev",
-    "deploy-commands": "tsx scripts/deploy-commands.ts"
+    "register-commands": "tsx scripts/register-commands.ts"
   },
   "keywords": [
     "RPG",
@@ -18,6 +18,7 @@
   "license": "MIT",
   "devDependencies": {
     "@eslint/compat": "^1.2.8",
+    "dotenv": "^16.5.0",
     "eslint": "^9.24.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.6",
