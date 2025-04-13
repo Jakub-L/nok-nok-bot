@@ -1,4 +1,4 @@
-import { commands } from '../src/commands';
+import { registerableCommands } from '../src/commands';
 import dotenv from 'dotenv';
 
 // CONFIG
@@ -16,7 +16,7 @@ const response = await fetch(url, {
 		'Content-Type': 'application/json',
 		Authorization: `Bot ${DISCORD_TOKEN}`
 	},
-	body: JSON.stringify(commands)
+	body: JSON.stringify(registerableCommands)
 });
 
 if (response.ok) {

@@ -1,6 +1,7 @@
 import { AutoRouter } from 'itty-router';
 import { InteractionResponseType, InteractionType, verifyKey } from 'discord-interactions';
 import { JsonResponse } from './utils';
+import { handlerLookup } from './commands';
 
 import type { Interaction } from './types';
 
@@ -41,10 +42,9 @@ router.post('/', async (req: Request, env: any) => {
 			type: InteractionResponseType.PONG
 		});
 	} else if (interaction.type === InteractionType.APPLICATION_COMMAND) {
-		return new JsonResponse({
-			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-			data: { content: 'Hello World!' }
-		});
+		const commandName = interaction.data.name.toLowerCase();
+		if (commandName in handlerLookup) return handlerLookup[commandName](interaction);
+		else return new JsonResponse({ error: 'Unknown Command' }, { status: 400 });
 	} else return new JsonResponse({ error: 'Unknown Type' }, { status: 400 });
 });
 
