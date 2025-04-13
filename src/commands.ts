@@ -10,7 +10,7 @@ const SET_SERVER: Command = {
 	handler: () =>
 		new JsonResponse({
 			type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-			data: { content: 'Used /server command' }
+			data: { content: 'Used /server command!' }
 		})
 };
 
