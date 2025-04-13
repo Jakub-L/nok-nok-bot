@@ -1,27 +1,15 @@
 import { AutoRouter } from 'itty-router';
 import { InteractionResponseType, InteractionType, verifyKey } from 'discord-interactions';
+import { JsonResponse } from './utils';
+
+import type { Interaction } from './types';
 
 // UTILS
-/** JSON Response to a request */
-class JsonResponse extends Response {
-	constructor(
-		body: any,
-		init: Record<string, any> = {
-			headers: {
-				'content-type': 'application/json;charset=UTF-8'
-			}
-		}
-	) {
-		const jsonBody = JSON.stringify(body);
-		super(jsonBody, init);
-	}
-}
-
 /**
  * Checks if the request is a valid Discord interaction
  * @param {Request} request - Incoming request
  * @param {any} env - Environment variables
- * @returns {Promise<{ interaction: any, isValid: boolean }>} - Returns the interaction and whether
+ * @returns {Promise<{ interaction: Interaction, isValid: boolean }>} - Returns the interaction and whether
  * 				the request is valid
  */
 async function verifyDiscordRequest(request: Request, env: any) {
@@ -31,7 +19,7 @@ async function verifyDiscordRequest(request: Request, env: any) {
 	const isValidRequest =
 		signature && timestamp && (await verifyKey(body, signature, timestamp, env.DISCORD_PUBLIC_KEY));
 	if (!isValidRequest) return { isValid: false };
-	return { interaction: JSON.parse(body), isValid: true };
+	return { interaction: JSON.parse(body) as Interaction, isValid: true };
 }
 
 // ROUTING
