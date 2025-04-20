@@ -43,7 +43,7 @@ router.post('/', async (req: Request, env: any) => {
 		});
 	} else if (interaction.type === InteractionType.ApplicationCommand) {
 		const commandName = interaction.data.name.toLowerCase();
-		if (commandName in handlerLookup) return handlerLookup[commandName](interaction);
+		if (commandName in handlerLookup) return await handlerLookup[commandName](interaction, env);
 		else return new JsonResponse({ error: 'Unknown Command' }, { status: 400 });
 	} else return new JsonResponse({ error: 'Unknown Type' }, { status: 400 });
 });
