@@ -1,9 +1,10 @@
 import { AutoRouter } from 'itty-router';
-import { InteractionResponseType, InteractionType, verifyKey } from 'discord-interactions';
-import { JsonResponse } from './utils/json-response';
+import { verifyKey } from 'discord-interactions';
+import { JsonResponse } from './utils';
 import { handlerLookup } from './commands';
 
 import type { Interaction } from './utils/types';
+import { InteractionType, InteractionResponseType } from 'discord-api-types/v10';
 
 // UTILS
 /**
@@ -37,11 +38,11 @@ router.post('/', async (req: Request, env: any) => {
 	const { isValid, interaction } = await verifyDiscordRequest(req, env);
 	if (!isValid || !interaction) return new Response('Bad request signature.', { status: 401 });
 
-	if (interaction.type === InteractionType.PING) {
+	if (interaction.type === InteractionType.Ping) {
 		return new JsonResponse({
-			type: InteractionResponseType.PONG
+			type: InteractionResponseType.Pong
 		});
-	} else if (interaction.type === InteractionType.APPLICATION_COMMAND) {
+	} else if (interaction.type === InteractionType.ApplicationCommand) {
 		const commandName = interaction.data.name.toLowerCase();
 		if (commandName in handlerLookup) return handlerLookup[commandName](interaction);
 		else return new JsonResponse({ error: 'Unknown Command' }, { status: 400 });
