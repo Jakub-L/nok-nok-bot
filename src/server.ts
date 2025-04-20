@@ -3,8 +3,7 @@ import { verifyKey } from 'discord-interactions';
 import { JsonResponse } from './utils';
 import { handlerLookup } from './commands';
 
-import type { Interaction } from './utils/types';
-import { InteractionType, InteractionResponseType } from 'discord-api-types/v10';
+import { InteractionType, InteractionResponseType, APIInteraction } from 'discord-api-types/v10';
 
 // UTILS
 /**
@@ -21,7 +20,7 @@ async function verifyDiscordRequest(request: Request, env: any) {
 	const isValidRequest =
 		signature && timestamp && (await verifyKey(body, signature, timestamp, env.DISCORD_PUBLIC_KEY));
 	if (!isValidRequest) return { isValid: false };
-	return { interaction: JSON.parse(body) as Interaction, isValid: true };
+	return { interaction: JSON.parse(body) as APIInteraction, isValid: true };
 }
 
 // ROUTING

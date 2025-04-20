@@ -1,4 +1,7 @@
-import { InteractionResponseType } from 'discord-api-types/v10';
+import {
+	InteractionResponseType,
+	APIApplicationCommandInteractionDataStringOption
+} from 'discord-api-types/v10';
 
 import type { Command, InteractionHandler } from './utils/types';
 import { JsonResponse, randomSelect, convertToBlockquote } from './utils';
@@ -19,18 +22,31 @@ const REMINDER: Command = {
 	name: 'reminder',
 	description:
 		'Posts a game reminder, letting the players know whether there is a game today or not.',
-	handler: () => {
+	options: [
+		{
+			type: 3,
+			name: 'custom_message',
+			description: 'A custom message to include in the reminder.'
+		}
+	],
+	handler: ({ data = {} }) => {
+		const { options = [] } = data;
+
+		const customMessage = options.find(
+			(option: APIApplicationCommandInteractionDataStringOption) => option.name === 'custom_message'
+		)?.value;
 		const greeting = randomSelect(greetings);
 		const reminder = randomSelect(gameHappening);
 		const fact = randomSelect(didYouKnow);
-		const customMessage = '';
 
 		const content = [
 			`### ${greeting} ${reminder}`,
-			`Jakub also left a custom message:\n${convertToBlockquote(customMessage)}`,
+			customMessage && `Jakub also left a custom message:\n${convertToBlockquote(customMessage)}`,
 			`**Did you know?**\n${convertToBlockquote(fact)}`,
 			`-# Beep boop! I am a bot.`
-		].join('\n\n');
+		]
+			.filter((x) => x)
+			.join('\n\n');
 
 		return new JsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
@@ -41,9 +57,10 @@ const REMINDER: Command = {
 
 const commands = [SET_SERVER, REMINDER];
 
-export const registerableCommands = commands.map(({ name, description }) => ({
-	name,
-	description
+export const registerableCommands = commands.map((command) => ({
+	name: command.name,
+	description: command.description,
+	options: command.options
 }));
 
 export const handlerLookup: Record<string, InteractionHandler> = commands.reduce(
