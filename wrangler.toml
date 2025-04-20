@@ -1,3 +1,7 @@
 name = "nok-nok-bot"
 main = "dist/index.js"
 compatibility_date = "2025-04-11"
+
+kv_namespaces = [
+  { binding = "NOK_NOK_BOT", id = "d3bb1089ce0140b4bd207b9f802b36c1", preview_id = "72624fcb80c64245888f10067832ead4" }
+]
