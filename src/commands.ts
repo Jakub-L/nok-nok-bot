@@ -11,11 +11,13 @@ const SET_SERVER: Command = {
 	name: 'server',
 	description:
 		'Post the current Foundry server IP address and remove previous links to prevent confusion.',
-	handler: () =>
-		new JsonResponse({
+	default_member_permissions: '8',
+	handler: async ({ data = {} }, env) => {
+		return new JsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: { content: 'Used /server command!' }
-		})
+		});
+	}
 };
 
 const REMINDER: Command = {
@@ -29,7 +31,8 @@ const REMINDER: Command = {
 			description: 'A custom message to include in the reminder.'
 		}
 	],
-	handler: ({ data = {} }) => {
+	default_member_permissions: '8',
+	handler: async ({ data = {} }) => {
 		const { options = [] } = data;
 
 		const customMessage = options.find(

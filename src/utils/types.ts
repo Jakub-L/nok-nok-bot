@@ -8,6 +8,7 @@ export type InteractionHandler = (
 export type Command = {
 	name: string;
 	description: string;
+	default_member_permissions?: string;
 	options?: APIApplicationCommandOption[];
 	handler: InteractionHandler;
 };
