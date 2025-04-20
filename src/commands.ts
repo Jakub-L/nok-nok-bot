@@ -75,12 +75,33 @@ const REMINDER: Command = {
 	}
 };
 
-const commands = [SET_SERVER, REMINDER];
+const CANCEL_GAME: Command = {
+	name: 'cancel',
+	description: 'Add a date to the list of future cancelled games',
+	options: [
+		{
+			type: 3,
+			name: 'date',
+			description: 'The date of the cancelled game.',
+			required: true
+		}
+	],
+	default_member_permissions: '8',
+	handler: async () => {
+		return new JsonResponse({
+			type: InteractionResponseType.ChannelMessageWithSource,
+			data: { content: '' }
+		});
+	}
+};
+
+const commands = [SET_SERVER, REMINDER, CANCEL_GAME];
 
 export const registerableCommands = commands.map((command) => ({
 	name: command.name,
 	description: command.description,
-	options: command.options
+	options: command.options,
+	default_member_permissions: command.default_member_permissions
 }));
 
 export const handlerLookup: Record<string, InteractionHandler> = commands.reduce(
