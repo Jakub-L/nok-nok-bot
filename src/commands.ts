@@ -11,8 +11,25 @@ const SET_SERVER: Command = {
 	name: 'server',
 	description:
 		'Post the current Foundry server IP address and remove previous links to prevent confusion.',
+	options: [
+		{
+			type: 3,
+			name: 'ip_address',
+			description: 'The IP address of the Foundry server.',
+			required: true
+		}
+	],
 	default_member_permissions: '8',
 	handler: async ({ data = {} }, env) => {
+		const { options = [] } = data;
+		const { NOK_NOK_BOT } = env;
+
+		const ipAddress = options.find(
+			(option: APIApplicationCommandInteractionDataStringOption) => option.name === 'ip_address'
+		)?.value;
+
+		await NOK_NOK_BOT.put('server_ip', ipAddress);
+
 		return new JsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
 			data: { content: 'Used /server command!' }
