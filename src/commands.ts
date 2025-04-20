@@ -1,7 +1,7 @@
 import { InteractionResponseType } from 'discord-interactions';
 
-import type { Command, InteractionHandler } from './types';
-import { JsonResponse } from './utils';
+import type { Command, InteractionHandler } from './utils/types';
+import { JsonResponse } from './utils/json-response';
 
 const SET_SERVER: Command = {
 	name: 'server',

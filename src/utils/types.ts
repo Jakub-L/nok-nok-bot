@@ -1,4 +1,4 @@
-import type { JsonResponse } from "./utils";
+import type { JsonResponse } from "./json-response";
 
 export type Interaction = Record<string, any>;
 export type InteractionHandler = (interaction: Interaction) => JsonResponse
