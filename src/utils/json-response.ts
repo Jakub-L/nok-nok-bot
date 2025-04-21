@@ -1,3 +1,5 @@
+import { InteractionResponseType, MessageFlags } from 'discord-api-types/v10';
+
 /** JSON Response to a request */
 export class JsonResponse extends Response {
 	constructor(
@@ -12,3 +14,14 @@ export class JsonResponse extends Response {
 		super(jsonBody, init);
 	}
 }
+
+/**
+ * Returns a JSON response sending an ephemeral error message
+ * @param {string} message - The message to send
+ * @returns {JsonResponse} An ephemeral message with the given message
+ */
+export const errorMessage = (message: string = "Sorry! There's been an error") =>
+	new JsonResponse({
+		type: InteractionResponseType.ChannelMessageWithSource,
+		data: { content: message, flags: MessageFlags.Ephemeral }
+	});

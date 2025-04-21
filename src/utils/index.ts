@@ -1,5 +1,6 @@
 import { convertToBlockquote } from './convert-to-blockquote';
-import { JsonResponse } from './json-response';
+import { JsonResponse, errorMessage } from './json-response';
 import { randomSelect } from './random-select';
+import { getOptionValue } from './get-option-value';
 
-export { convertToBlockquote, JsonResponse, randomSelect };
+export { convertToBlockquote, errorMessage, JsonResponse, randomSelect, getOptionValue };
