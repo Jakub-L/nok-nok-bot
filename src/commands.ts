@@ -4,7 +4,13 @@ import {
 } from 'discord-api-types/v10';
 
 import type { Command, InteractionHandler } from './utils/types';
-import { JsonResponse, randomSelect, convertToBlockquote } from './utils';
+import {
+	convertToBlockquote,
+	errorMessage,
+	getOptionValue,
+	JsonResponse,
+	randomSelect
+} from './utils';
 import { didYouKnow, gameHappening, greetings } from './data';
 
 const SET_SERVER: Command = {
@@ -46,15 +52,26 @@ const REMINDER: Command = {
 			type: 3,
 			name: 'custom_message',
 			description: 'A custom message to include in the reminder.'
+		},
+		{
+			type: 4,
+			name: 'game_weekday_override',
+			description: 'Override the game weekday. 0 = Sunday, 1 = Monday, etc.',
+			min_value: 0,
+			max_value: 6
 		}
 	],
 	default_member_permissions: '8',
-	handler: async ({ data = {} }) => {
+	handler: async ({ data = {} }, env) => {
 		const { options = [] } = data;
+		const { GAME_WEEKDAY } = env;
 
-		const customMessage = options.find(
-			(option: APIApplicationCommandInteractionDataStringOption) => option.name === 'custom_message'
-		)?.value;
+		const gameWeekday =
+			getOptionValue(options, 'game_weekday_override') || parseInt(GAME_WEEKDAY, 10);
+		const currentWeekday = new Date().getDay();
+		if (currentWeekday !== gameWeekday) return errorMessage("It's not a game day today!");
+
+		const customMessage = getOptionValue(options, 'custom_message');
 		const greeting = randomSelect(greetings);
 		const reminder = randomSelect(gameHappening);
 		const fact = randomSelect(didYouKnow);
@@ -62,8 +79,7 @@ const REMINDER: Command = {
 		const content = [
 			`### ${greeting} ${reminder}`,
 			customMessage && `Jakub also left a custom message:\n${convertToBlockquote(customMessage)}`,
-			`**Did you know?**\n${convertToBlockquote(fact)}`,
-			`-# Beep boop! I am a bot.`
+			`**Did you know?**\n${convertToBlockquote(fact)}\n-# Beep boop! I am a bot. This is a reminder message.`
 		]
 			.filter((x) => x)
 			.join('\n\n');
