@@ -3,7 +3,12 @@ import { verifyKey } from 'discord-interactions';
 import { JsonResponse } from './utils';
 import { handlerLookup } from './commands';
 
-import { InteractionType, InteractionResponseType, APIInteraction } from 'discord-api-types/v10';
+import {
+	InteractionType,
+	InteractionResponseType,
+	APIInteraction,
+	MessageFlags
+} from 'discord-api-types/v10';
 
 // UTILS
 /**
@@ -51,7 +56,10 @@ router.post('/', async (req: Request, env: any) => {
 	if (!isUserAuthorised(interaction, env)) {
 		return new JsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
-			data: { content: 'You are not allowed to use this command.' }
+			data: {
+				content: 'Sorry! You are not authorised to use this bot.',
+				flags: MessageFlags.Ephemeral
+			}
 		});
 	}
 
