@@ -1,6 +1,7 @@
 import {
 	InteractionResponseType,
-	APIApplicationCommandInteractionDataStringOption
+	APIApplicationCommandInteractionDataStringOption,
+	MessageFlags
 } from 'discord-api-types/v10';
 
 import type { Command, InteractionHandler } from './utils/types';
@@ -8,6 +9,7 @@ import {
 	convertToBlockquote,
 	errorMessage,
 	getOptionValue,
+	isDateInPast,
 	JsonResponse,
 	randomSelect
 } from './utils';
@@ -67,7 +69,7 @@ const REMINDER: Command = {
 		const { GAME_WEEKDAY } = env;
 
 		const gameWeekday =
-			getOptionValue(options, 'game_weekday_override') || parseInt(GAME_WEEKDAY, 10);
+			getOptionValue(options, 'game_weekday_override') ?? parseInt(GAME_WEEKDAY, 10);
 		const currentWeekday = new Date().getDay();
 		if (currentWeekday !== gameWeekday) return errorMessage("It's not a game day today!");
 
@@ -100,13 +102,32 @@ const CANCEL_GAME: Command = {
 			name: 'date',
 			description: 'The date of the cancelled game.',
 			required: true
+		},
+		{
+			type: 4,
+			name: 'game_weekday_override',
+			description: 'Override the game weekday. 0 = Sunday, 1 = Monday, etc.',
+			min_value: 0,
+			max_value: 6
 		}
 	],
 	default_member_permissions: '8',
+	handler: async ({ data = {} }, env) => {
+		const { options = [] } = data;
+		const { GAME_WEEKDAY } = env;
+
+		const gameWeekday =
+			getOptionValue(options, 'game_weekday_override') ?? parseInt(GAME_WEEKDAY, 10);
+		const date = new Date(getOptionValue(options, 'date'));
+
+		if (isNaN(date.getTime())) return errorMessage('Invalid date format!');
+		if (isDateInPast(date)) return errorMessage('Date is in the past!');
+		if (date.getDay() !== gameWeekday) return errorMessage('Date is not a game day!');
+
 	handler: async () => {
 		return new JsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
-			data: { content: '' }
+			data: { content: ':)', flags: MessageFlags.Ephemeral }
 		});
 	}
 };
