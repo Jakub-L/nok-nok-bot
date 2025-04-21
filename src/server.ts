@@ -23,6 +23,17 @@ async function verifyDiscordRequest(request: Request, env: any) {
 	return { interaction: JSON.parse(body) as APIInteraction, isValid: true };
 }
 
+/**
+ * Checks if the user is authorised to use the bot. Uses an environment variable to check the
+ * user's ID.
+ * @param {APIInteraction} interaction - Discord interaction
+ * @param {any} env - Environment variables
+ * @returns {boolean} - Returns true if the user is authorised, false otherwise
+ */
+function isUserAuthorised(interaction: APIInteraction, env: any) {
+	return interaction.member?.user.id === env.DISCORD_AUTHORISED_USER_ID;
+}
+
 // ROUTING
 const router = AutoRouter();
 
@@ -36,6 +47,13 @@ router.get(
 router.post('/', async (req: Request, env: any) => {
 	const { isValid, interaction } = await verifyDiscordRequest(req, env);
 	if (!isValid || !interaction) return new Response('Bad request signature.', { status: 401 });
+
+	if (!isUserAuthorised(interaction, env)) {
+		return new JsonResponse({
+			type: InteractionResponseType.ChannelMessageWithSource,
+			data: { content: 'You are not allowed to use this command.' }
+		});
+	}
 
 	if (interaction.type === InteractionType.Ping) {
 		return new JsonResponse({
