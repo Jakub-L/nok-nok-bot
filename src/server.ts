@@ -1,14 +1,9 @@
 import { AutoRouter } from 'itty-router';
 import { verifyKey } from 'discord-interactions';
-import { JsonResponse } from './utils';
+import { errorMessage, JsonResponse } from './utils';
 import { handlerLookup } from './commands';
 
-import {
-	InteractionType,
-	InteractionResponseType,
-	APIInteraction,
-	MessageFlags
-} from 'discord-api-types/v10';
+import { InteractionType, InteractionResponseType, APIInteraction } from 'discord-api-types/v10';
 
 // UTILS
 /**
@@ -54,13 +49,7 @@ router.post('/', async (req: Request, env: any) => {
 	if (!isValid || !interaction) return new Response('Bad request signature.', { status: 401 });
 
 	if (!isUserAuthorised(interaction, env)) {
-		return new JsonResponse({
-			type: InteractionResponseType.ChannelMessageWithSource,
-			data: {
-				content: 'Sorry! You are not authorised to use this bot.',
-				flags: MessageFlags.Ephemeral
-			}
-		});
+		return errorMessage('Sorry! You are not authorised to use this bot.');
 	}
 
 	if (interaction.type === InteractionType.Ping) {
