@@ -143,7 +143,41 @@ const CANCEL_GAME: Command = {
 	}
 };
 
-const commands = [SET_SERVER, REMINDER, CANCEL_GAME];
+const RESTORE_GAME: Command = {
+	name: 'restore',
+	description: 'Remove a date from the list of future cancelled games',
+	options: [
+		{
+			type: 3,
+			name: 'date',
+			description: 'The date of the cancelled game.',
+			required: true
+		}
+	],
+	default_member_permissions: '8',
+	handler: async ({ data = {} }, env) => {
+		const { options = [] } = data;
+		const { NOK_NOK_BOT } = env;
+
+		const date = getOptionValue(options, 'date');
+
+		const cancelledGames = JSON.parse(await NOK_NOK_BOT.get('cancelled_games')) ?? [];
+		const newCancelledGames = cancelledGames
+			.filter((date: string) => !isDateInPast(new Date(date)))
+			.filter((cancelledGame: string) => date !== cancelledGame);
+		await NOK_NOK_BOT.put('cancelled_games', JSON.stringify(newCancelledGames));
+
+		return new JsonResponse({
+			type: InteractionResponseType.ChannelMessageWithSource,
+			data: {
+				content: `Marked game on ${new Date(date).toLocaleDateString('en-GB')} as restored`,
+				flags: MessageFlags.Ephemeral
+			}
+		});
+	}
+};
+
+const commands = [SET_SERVER, REMINDER, CANCEL_GAME, RESTORE_GAME];
 
 export const registerableCommands = commands.map((command) => ({
 	name: command.name,
