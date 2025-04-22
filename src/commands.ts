@@ -66,20 +66,22 @@ const REMINDER: Command = {
 	default_member_permissions: '8',
 	handler: async ({ data = {} }, env) => {
 		const { options = [] } = data;
-		const { GAME_WEEKDAY } = env;
+		const { GAME_WEEKDAY, NOK_NOK_BOT } = env;
 
-		const gameWeekday =
-			getOptionValue(options, 'game_weekday_override') ?? parseInt(GAME_WEEKDAY, 10);
-		const currentWeekday = new Date().getDay();
-		if (currentWeekday !== gameWeekday) return errorMessage("It's not a game day today!");
+		const today = new Date();
+		const gameWeekday = getOptionValue(options, 'game_weekday_override') ?? Number(GAME_WEEKDAY);
+		if (today.getDay() !== gameWeekday) return errorMessage("It's not a game day today!");
+
+		const cancelledGames = JSON.parse(await NOK_NOK_BOT.get('cancelled_games')) ?? [];
+		const isCancelled: boolean = cancelledGames.includes(today.toISOString().split('T')[0]);
 
 		const customMessage = getOptionValue(options, 'custom_message');
 		const greeting = randomSelect(greetings);
-		const reminder = randomSelect(gameHappening);
+		const reminder = randomSelect(isCancelled ? gameCancelled : gameHappening);
 		const fact = randomSelect(didYouKnow);
 
 		const content = [
-			`### ${greeting} ${reminder}`,
+			`${greeting} ${reminder}`,
 			customMessage && `Jakub also left a custom message:\n${convertToBlockquote(customMessage)}`,
 			`**Did you know?**\n${convertToBlockquote(fact)}\n-# Beep boop! I am a bot. This is a reminder message.`
 		]
