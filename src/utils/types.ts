@@ -1,4 +1,4 @@
-import type { JsonResponse } from './json-response';
+import type { JsonResponse } from './response';
 import { APIApplicationCommandOption } from 'discord-api-types/v10';
 
 export type InteractionHandler = (

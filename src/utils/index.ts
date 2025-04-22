@@ -1,8 +1,8 @@
-import { convertToBlockquote } from './convert-to-blockquote';
+import { convertToBlockquote } from './formatting';
 import { isDateInPast, toISODateString } from './date';
-import { getOptionValue } from './get-option-value';
-import { JsonResponse, errorMessage } from './json-response';
-import { randomSelect } from './random-select';
+import { getOptionValue } from './interactions';
+import { JsonResponse, errorMessage } from './response';
+import { randomSelect } from './random';
 
 export {
 	convertToBlockquote,
