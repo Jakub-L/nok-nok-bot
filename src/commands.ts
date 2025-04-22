@@ -13,7 +13,7 @@ import {
 	JsonResponse,
 	randomSelect
 } from './utils';
-import { didYouKnow, gameHappening, greetings } from './data';
+import { didYouKnow, gameCancelled, gameHappening, greetings } from './data';
 
 const SET_SERVER: Command = {
 	name: 'server',
@@ -114,7 +114,7 @@ const CANCEL_GAME: Command = {
 	default_member_permissions: '8',
 	handler: async ({ data = {} }, env) => {
 		const { options = [] } = data;
-		const { GAME_WEEKDAY } = env;
+		const { GAME_WEEKDAY, NOK_NOK_BOT } = env;
 
 		const gameWeekday =
 			getOptionValue(options, 'game_weekday_override') ?? parseInt(GAME_WEEKDAY, 10);
@@ -124,10 +124,19 @@ const CANCEL_GAME: Command = {
 		if (isDateInPast(date)) return errorMessage('Date is in the past!');
 		if (date.getDay() !== gameWeekday) return errorMessage('Date is not a game day!');
 
-	handler: async () => {
+		const cancelledGames = JSON.parse(await NOK_NOK_BOT.get('cancelled_games')) ?? [];
+		const newCancelledGames = cancelledGames
+			.filter((date: string) => !isDateInPast(new Date(date)))
+			.concat([date.toISOString().split('T')[0]])
+			.reduce((set: Set<string>, date: string) => set.add(date), new Set());
+		await NOK_NOK_BOT.put('cancelled_games', JSON.stringify([...newCancelledGames.values()]));
+
 		return new JsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
-			data: { content: ':)', flags: MessageFlags.Ephemeral }
+			data: {
+				content: `Marked game on ${date.toLocaleDateString('en-GB')} as cancelled`,
+				flags: MessageFlags.Ephemeral
+			}
 		});
 	}
 };
