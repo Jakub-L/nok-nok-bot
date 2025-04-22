@@ -48,14 +48,12 @@ router.post('/', async (req: Request, env: any) => {
 	const { isValid, interaction } = await verifyDiscordRequest(req, env);
 	if (!isValid || !interaction) return new Response('Bad request signature.', { status: 401 });
 
-	if (!isUserAuthorised(interaction, env)) {
-		return errorMessage('Sorry! You are not authorised to use this bot.');
-	}
-
 	if (interaction.type === InteractionType.Ping) {
 		return new JsonResponse({
 			type: InteractionResponseType.Pong
 		});
+	} else if (!isUserAuthorised(interaction, env)) {
+		return errorMessage('Sorry! You are not authorised to use this bot.');
 	} else if (interaction.type === InteractionType.ApplicationCommand) {
 		const commandName = interaction.data.name.toLowerCase();
 		if (commandName in handlerLookup) return await handlerLookup[commandName](interaction, env);
