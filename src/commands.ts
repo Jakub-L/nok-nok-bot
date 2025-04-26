@@ -12,6 +12,7 @@ import {
 	errorMessage,
 	getChannelMessages,
 	getOptionValue,
+	getTimeUntilGame,
 	isDateInPast,
 	isWithinPastDays,
 	JsonResponse,
@@ -34,14 +35,14 @@ const SET_SERVER: Command = {
 	default_member_permissions: '8',
 	handler: async ({ data = {} }, env) => {
 		const { options = [] } = data;
-		const { DISCORD_APPLICATION_ID } = env;
+		const { DISCORD_APPLICATION_ID, GAME_TIME } = env;
 
 		const ipAddress = options.find(
 			(option: APIApplicationCommandInteractionDataStringOption) => option.name === 'ip_address'
 		)?.value;
 		if (!ipAddress) return errorMessage('IP address is required!');
 
-		// Fetch the last messages and delete any previous server messages
+		// Fetch the last, find server messages by the bod and delete them
 		const previousServerMessageIds = (await getChannelMessages(env))
 			.filter(
 				(message: APIMessage) =>
@@ -50,10 +51,9 @@ const SET_SERVER: Command = {
 					isWithinPastDays(message.timestamp, 14)
 			)
 			.map((message: APIMessage) => message.id);
-
 		await deleteMessages(previousServerMessageIds, env);
 
-		const time = '30 minutes';
+		const time = getTimeUntilGame(Number(GAME_TIME));
 
 		return new JsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,

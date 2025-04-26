@@ -1,5 +1,6 @@
 const MS_PER_MINUTE = 60 * 1000;
-const MS_PER_DAY = 24 * 60 * MS_PER_MINUTE;
+const MS_PER_HOUR = 60 * MS_PER_MINUTE;
+const MS_PER_DAY = 24 * MS_PER_HOUR;
 const COMPARISON_THRESHOLD = 5 * MS_PER_MINUTE;
 
 /**
@@ -38,4 +39,19 @@ export const isDateInPast = (date: Date): boolean => {
 export const isWithinPastDays = (timestamp: string, days: number): boolean => {
 	const past = new Date(Date.now() - days * MS_PER_DAY + COMPARISON_THRESHOLD);
 	return new Date(timestamp) > past;
+};
+
+export const getTimeUntilGame = (gameHour: number): string => {
+	const gameTime = new Date();
+	gameTime.setHours(gameHour, 0, 0, 0);
+	const timeDiff = gameTime.getTime() - new Date().getTime();
+
+	const hours = Math.floor(timeDiff / MS_PER_HOUR);
+	const minutes = Math.floor((timeDiff % MS_PER_HOUR) / MS_PER_MINUTE);
+
+	const result: string[] = [];
+	if (hours > 0) result.push(`${hours} hour${hours > 1 ? 's' : ''}`);
+	if (minutes > 0) result.push(`${minutes} minute${minutes > 1 ? 's' : ''}`);
+	if (result.length === 0) result.push('less than a minute');
+	return result.join(' and ');
 };

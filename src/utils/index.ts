@@ -1,5 +1,5 @@
 import { convertToBlockquote } from './formatting';
-import { isDateInPast, toISODateString, isWithinPastDays } from './date';
+import { isDateInPast, toISODateString, isWithinPastDays, getTimeUntilGame } from './date';
 import { getOptionValue } from './interactions';
 import { JsonResponse, errorMessage } from './response';
 import { randomSelect } from './random';
@@ -11,6 +11,7 @@ export {
 	errorMessage,
 	getChannelMessages,
 	getOptionValue,
+	getTimeUntilGame,
 	isDateInPast,
 	isWithinPastDays,
 	JsonResponse,
