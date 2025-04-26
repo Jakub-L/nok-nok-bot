@@ -8,9 +8,12 @@ import {
 import type { Command, InteractionHandler } from './utils/types';
 import {
 	convertToBlockquote,
+	deleteMessages,
 	errorMessage,
+	getChannelMessages,
 	getOptionValue,
 	isDateInPast,
+	isWithinPastDays,
 	JsonResponse,
 	randomSelect
 } from './utils';
@@ -31,7 +34,7 @@ const SET_SERVER: Command = {
 	default_member_permissions: '8',
 	handler: async ({ data = {} }, env) => {
 		const { options = [] } = data;
-		const { DISCORD_TOKEN, DISCORD_CHANNEL_ID, DISCORD_APPLICATION_ID } = env;
+		const { DISCORD_APPLICATION_ID } = env;
 
 		const ipAddress = options.find(
 			(option: APIApplicationCommandInteractionDataStringOption) => option.name === 'ip_address'
@@ -39,32 +42,16 @@ const SET_SERVER: Command = {
 		if (!ipAddress) return errorMessage('IP address is required!');
 
 		// Fetch the last messages and delete any previous server messages
-		const channelMessages = await fetch(
-			`https://discord.com/api/v10/channels/${DISCORD_CHANNEL_ID}/messages?limit=100`,
-			{
-				headers: {
-					Authorization: `Bot ${DISCORD_TOKEN}`
-				}
-			}
-		);
-		const messageHistory = await channelMessages.json();
-		const previousServerMessageIds = messageHistory
+		const previousServerMessageIds = (await getChannelMessages(env))
 			.filter(
 				(message: APIMessage) =>
 					message.author.id === DISCORD_APPLICATION_ID &&
 					message.content.endsWith('server message.') &&
-					new Date(message.timestamp) > new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)
+					isWithinPastDays(message.timestamp, 14)
 			)
 			.map((message: APIMessage) => message.id);
 
-		const r = await fetch(
-			`https://discord.com/api/v10/channels/${DISCORD_CHANNEL_ID}/messages/bulk-delete`,
-			{
-				method: 'POST',
-				body: JSON.stringify({ messages: previousServerMessageIds }),
-				headers: { Authorization: `Bot ${DISCORD_TOKEN}`, 'Content-Type': 'application/json' }
-			}
-		);
+		await deleteMessages(previousServerMessageIds, env);
 
 		const time = '30 minutes';
 
