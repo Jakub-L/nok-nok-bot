@@ -1,7 +1,8 @@
 import {
 	InteractionResponseType,
 	APIApplicationCommandInteractionDataStringOption,
-	MessageFlags
+	MessageFlags,
+	APIMessage
 } from 'discord-api-types/v10';
 
 import type { Command, InteractionHandler } from './utils/types';
@@ -30,17 +31,48 @@ const SET_SERVER: Command = {
 	default_member_permissions: '8',
 	handler: async ({ data = {} }, env) => {
 		const { options = [] } = data;
-		const { NOK_NOK_BOT } = env;
+		const { DISCORD_TOKEN, DISCORD_CHANNEL_ID, DISCORD_APPLICATION_ID } = env;
 
 		const ipAddress = options.find(
 			(option: APIApplicationCommandInteractionDataStringOption) => option.name === 'ip_address'
 		)?.value;
+		if (!ipAddress) return errorMessage('IP address is required!');
 
-		await NOK_NOK_BOT.put('server_ip', ipAddress);
+		// Fetch the last messages and delete any previous server messages
+		const channelMessages = await fetch(
+			`https://discord.com/api/v10/channels/${DISCORD_CHANNEL_ID}/messages?limit=100`,
+			{
+				headers: {
+					Authorization: `Bot ${DISCORD_TOKEN}`
+				}
+			}
+		);
+		const messageHistory = await channelMessages.json();
+		const previousServerMessageIds = messageHistory
+			.filter(
+				(message: APIMessage) =>
+					message.author.id === DISCORD_APPLICATION_ID &&
+					message.content.endsWith('server message.') &&
+					new Date(message.timestamp) > new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)
+			)
+			.map((message: APIMessage) => message.id);
+
+		const r = await fetch(
+			`https://discord.com/api/v10/channels/${DISCORD_CHANNEL_ID}/messages/bulk-delete`,
+			{
+				method: 'POST',
+				body: JSON.stringify({ messages: previousServerMessageIds }),
+				headers: { Authorization: `Bot ${DISCORD_TOKEN}`, 'Content-Type': 'application/json' }
+			}
+		);
+
+		const time = '30 minutes';
 
 		return new JsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
-			data: { content: 'Used /server command!' }
+			data: {
+				content: `The server is up!\n${ipAddress}\nSee you in ${time}!\n-# Beep boop! I am a bot. This is a server message.`
+			}
 		});
 	}
 };
