@@ -34,17 +34,14 @@ const SET_SERVER: Command = {
 	],
 	default_member_permissions: '8',
 	handler: async ({ data = {} }, env) => {
-		console.log('Initialising command');
 		const { options = [] } = data;
 		const { DISCORD_APPLICATION_ID, GAME_TIME } = env;
 
 		const ipAddress = options.find(
 			(option: APIApplicationCommandInteractionDataStringOption) => option.name === 'ip_address'
 		)?.value;
-		console.log('IP Address: ', ipAddress);
 		if (!ipAddress) return errorMessage('IP address is required!');
 
-		console.log('Fetching channel messages');
 		// Fetch the last, find server messages by the bod and delete them
 		const previousServerMessageIds = (await getChannelMessages(env))
 			.filter(
@@ -54,12 +51,9 @@ const SET_SERVER: Command = {
 					isWithinPastDays(message.timestamp, 14)
 			)
 			.map((message: APIMessage) => message.id);
-		console.log('Previous server message IDs: ', previousServerMessageIds);
 		await deleteMessages(previousServerMessageIds, env);
-		console.log('Deleted previous server messages');
 
 		const time = getTimeUntilGame(Number(GAME_TIME));
-		console.log('Time until game: ', time);
 
 		return new JsonResponse({
 			type: InteractionResponseType.ChannelMessageWithSource,
