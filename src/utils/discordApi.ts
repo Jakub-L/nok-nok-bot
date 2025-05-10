@@ -48,6 +48,7 @@ export const getChannelMessages = async (env: any) => {
 			{ method: 'GET' },
 			env
 		);
+		console.log('getChannelMessages response: ', response?.json());
 		return (await response?.json()) ?? [];
 	} catch (error) {
 		console.error('Error fetching channel messages:', error);
