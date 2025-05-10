@@ -21,11 +21,17 @@ interface DiscordRequestOptions {
 export const discordRequest = async (url: string, options: DiscordRequestOptions, env: any) => {
 	const headers: Record<string, string> = { Authorization: `Bot ${env.DISCORD_TOKEN}` };
 	if (options.body) headers['Content-Type'] = 'application/json';
-	return await fetch(`https://discord.com/api/v10/${url}`, {
-		method: options.method,
-		body: options.body ? JSON.stringify(options.body) : undefined,
-		headers
-	});
+	try {
+		const res = await fetch(`https://discord.com/api/v10/${url}`, {
+			method: options.method,
+			body: options.body ? JSON.stringify(options.body) : undefined,
+			headers
+		});
+		return res;
+	} catch (error) {
+		console.error('Error making Discord API request:', error);
+		return null;
+	}
 };
 
 /**
@@ -35,12 +41,17 @@ export const discordRequest = async (url: string, options: DiscordRequestOptions
  * @returns {Promise<Array<any>>} A promise that resolves to an array of message objects from the Discord API.
  */
 export const getChannelMessages = async (env: any) => {
-	const response = await discordRequest(
-		`channels/${env.DISCORD_CHANNEL_ID}/messages?limit=100`,
-		{ method: 'GET' },
-		env
-	);
-	return await response.json();
+	try {
+		const response = await discordRequest(
+			`channels/${env.DISCORD_CHANNEL_ID}/messages?limit=100`,
+			{ method: 'GET' },
+			env
+		);
+		return await response.json();
+	} catch (error) {
+		console.error('Error fetching channel messages:', error);
+		return [];
+	}
 };
 
 /**
