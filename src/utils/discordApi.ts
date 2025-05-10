@@ -23,12 +23,11 @@ export const discordRequest = async (url: string, options: DiscordRequestOptions
 
 	if (options.body) headers['Content-Type'] = 'application/json';
 	try {
-		const res = await fetch(`https://discord.com/api/v10/${url}`, {
+		return await fetch(`https://discord.com/api/v10/${url}`, {
 			method: options.method,
 			body: options.body ? JSON.stringify(options.body) : undefined,
 			headers
 		});
-		return res;
 	} catch (error) {
 		console.error('Error making Discord API request:', error);
 		return null;
@@ -48,9 +47,7 @@ export const getChannelMessages = async (env: any) => {
 			{ method: 'GET' },
 			env
 		);
-		const body = await response?.json();
-		console.log('Fetched messages:', body);
-		return body ?? [];
+		return (await response?.json()) ?? [];
 	} catch (error) {
 		console.error('Error fetching channel messages:', error);
 		return [];
