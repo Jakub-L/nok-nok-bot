@@ -44,6 +44,7 @@ const SET_SERVER: Command = {
 		console.log('IP Address: ', ipAddress);
 		if (!ipAddress) return errorMessage('IP address is required!');
 
+		console.log('Fetching channel messages');
 		// Fetch the last, find server messages by the bod and delete them
 		const previousServerMessageIds = (await getChannelMessages(env))
 			.filter(
