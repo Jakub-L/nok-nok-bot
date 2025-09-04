@@ -22,5 +22,6 @@
   "If you use a move action but don't move out of a square, any move-based reactions trigger at the end of that action or ability.\n-# [ Player Core, p. 421 ]",
   "Healing to full through any means and resting for 10 minutes removes the Wounded condition\n-# [ Player Core, p. 460 ]",
   "When using the Delay action, any effects that would occur at the end or start of your turn occur immediately. This includes spell durations, afflictions and persistent damage.\n-# [ Player Core, p. 416 ]",
-  "To Arrest a Fall, you must have a fly Speed. Feats like Evanescent Wings, Fledgeling Flight or Dragon's Flight only grant a fly Speed as part of their actions, being insufficent for Arresting a Fall.\n-# [ Player Core p. 418 | Ancestry Guide, pp. 130, 136 | Player Core 2, p. 46 ]"
+  "To Arrest a Fall, you must have a fly Speed. Feats like Evanescent Wings, Fledgeling Flight or Dragon's Flight only grant a fly Speed as part of their actions, being insufficent for Arresting a Fall.\n-# [ Player Core p. 418 | Ancestry Guide, pp. 130, 136 | Player Core 2, p. 46 ]",
+  "The quality of material affects maximum item levels. Low-grade items can be up to level 8 and have runes up to level 8. Standard-grade supports up to level 15 and high-grade can be any level.\n-# [ GM Core, p. 253 ]"
 ]
